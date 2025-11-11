@@ -1,33 +1,64 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
-<h2 class="mb-3 text-center">Season Summary</h2>
 
+<form method="POST" class="row g-3 mb-4 justify-content-center">
+  <div class="col-md-4">
+    <!-- Dancer dropdown -->
+    <select name="name" class="form-select">
+      <option value="">All Dancers</option>
+      {% for dancer in dancer_list %}
+        <option value="{{ dancer }}" {% if request.form.get('name') == dancer %}selected{% endif %}>
+          {{ dancer }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <!-- Level dropdown -->
+    <select name="level" class="form-select">
+      <option value="">All Levels</option>
+      {% for lvl in level_list %}
+        <option value="{{ lvl }}" {% if request.form.get('level') == lvl %}selected{% endif %}>
+          {{ lvl }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Filter</button>
+  </div>
+</form>
+
+{% if summary %}
 <table class="table table-bordered table-hover text-center align-middle shadow-sm">
   <thead class="table-dark">
     <tr>
       <th>Name</th>
-      <th>Level</th>
       <th>Total Points</th>
+      <th>Current Level</th>
       <th>Status</th>
     </tr>
   </thead>
   <tbody>
-    {% for dancer in summary %}
-    {% set total = dancer[1] %}
-    {% set next_level = 'Intermediate' if dancer[2] == 'Novice'
-                      else 'Advanced' if dancer[2] == 'Intermediate'
-                      else 'Pro' if dancer[2] == 'Advanced'
-                      else 'Top Tier' %}
-    {% set status = 'Eligible for ' + next_level if total >= 50 else 'Needs More Points' %}
-    <tr>
-      <td>{{ dancer[0] }}</td>
-      <td>{{ dancer[2] }}</td>
-      <td>{{ dancer[1] }}</td>
-      <td>{{ status }}</td>
-    </tr>
+    {% for s in summary %}
+      <tr>
+        <td>{{ s[0] }}</td>
+        <td>{{ s[1] }}</td>
+        <td>{{ s[2] }}</td>
+        <td>
+          {% if s[1] >= 150 %}
+            <span class="badge bg-success">Eligible to Advance</span>
+          {% else %}
+            <span class="badge bg-secondary">Not Eligible</span>
+          {% endif %}
+        </td>
+      </tr>
     {% endfor %}
   </tbody>
 </table>
-
+{% else %}
+<p class="text-center text-muted">No summary data found for the selected filters.</p>
+{% endif %}
 {% endblock %}

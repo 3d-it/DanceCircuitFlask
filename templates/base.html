@@ -9,24 +9,38 @@
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{{ url_for('index') }}">Dance Circuit</a>
-      <div>
-        <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Competitions</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('summary') }}">Summary</a></li>
-        </ul>
-      </div>
+  <!-- Header bar with logo, title, and nav links -->
+  <header class="navbar navbar-dark bg-dark px-4 py-2 shadow-sm d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <img src="{{ url_for('static', filename='DanceCircuit_logo.png') }}" alt="Dance Circuit Logo" class="logo me-3">
+      <h4 class="text-light mb-0 page-title">
+        {% if request.endpoint == 'index' %}
+          Competitions
+        {% elif request.endpoint == 'summary' %}
+          Season Summary
+        {% else %}
+          Dance Circuit
+        {% endif %}
+      </h4>
     </div>
-  </nav>
+    <nav>
+      <ul class="navbar-nav flex-row">
+        <li class="nav-item mx-2">
+          <a class="nav-link text-light {% if request.endpoint == 'index' %}fw-bold{% endif %}" href="{{ url_for('index') }}">Competitions</a>
+        </li>
+        <li class="nav-item mx-2">
+          <a class="nav-link text-light {% if request.endpoint == 'summary' %}fw-bold{% endif %}" href="{{ url_for('summary') }}">Summary</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-  <div class="container">
+  <main class="container mt-4">
     {% block content %}{% endblock %}
-  </div>
+  </main>
 
   <footer class="text-center mt-5 py-3 border-top">
-    <p class="text-muted mb-0">&copy; 2025 National Dance Circuit</p>
+    <p class="text-muted mb-0">National Dance Circuit</p>
   </footer>
 
 </body>

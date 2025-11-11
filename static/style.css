@@ -14,3 +14,15 @@ body {
 footer {
   font-size: 0.9rem;
 }
+
+
+.logo {
+  width: 40px;
+  height: auto;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
