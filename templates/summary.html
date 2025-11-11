@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-3 text-center">Season Summary</h2>
+
+<table class="table table-bordered table-hover text-center align-middle shadow-sm">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Level</th>
+      <th>Total Points</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dancer in summary %}
+    {% set total = dancer[1] %}
+    {% set next_level = 'Intermediate' if dancer[2] == 'Novice'
+                      else 'Advanced' if dancer[2] == 'Intermediate'
+                      else 'Pro' if dancer[2] == 'Advanced'
+                      else 'Top Tier' %}
+    {% set status = 'Eligible for ' + next_level if total >= 50 else 'Needs More Points' %}
+    <tr>
+      <td>{{ dancer[0] }}</td>
+      <td>{{ dancer[2] }}</td>
+      <td>{{ dancer[1] }}</td>
+      <td>{{ status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

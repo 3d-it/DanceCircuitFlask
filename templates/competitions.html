@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-3 text-center">Competition Results</h2>
+
+<form method="POST" class="row g-3 mb-4 justify-content-center">
+  <div class="col-md-4">
+    <input type="text" name="name" class="form-control" placeholder="Search by dancer name" value="{{ request.form.get('name', '') }}">
+  </div>
+  <div class="col-md-3">
+    <select name="level" class="form-select">
+      <option value="" {% if not request.form.get('level') %}selected{% endif %}>All Levels</option>
+      <option value="Newcomer" {% if request.form.get('level') == 'Newcomer' %}selected{% endif %}>Newcomer</option>
+      <option value="Novice" {% if request.form.get('level') == 'Novice' %}selected{% endif %}>Novice</option>
+      <option value="Intermediate" {% if request.form.get('level') == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+      <option value="Advanced" {% if request.form.get('level') == 'Advanced' %}selected{% endif %}>Advanced</option>
+      <option value="Pro" {% if request.form.get('level') == 'Pro' %}selected{% endif %}>Pro</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Filter</button>
+  </div>
+</form>
+
+{% if dancers %}
+<table class="table table-bordered table-hover text-center align-middle shadow-sm">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Competition</th>
+      <th>Level</th>
+      <th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dancer in dancers %}
+    <tr>
+      <td>{{ dancer[1] }}</td>
+      <td>{{ dancer[2] }}</td>
+      <td>{{ dancer[3] }}</td>
+      <td>{{ dancer[4] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="text-center text-muted mt-4">No results found.</p>
+{% endif %}
+
+{% endblock %}
