@@ -1,13 +1,20 @@
 from flask import Flask, render_template, request
 import sqlite3
 import os
+import random
 
 app = Flask(__name__)
 
-DB_PATH = r"C:\Users\denni\OneDrive\Desktop\DanceCircuitFlask\dance.db"
+# Database filename (no absolute paths for Render)
+DB_PATH = "dance.db"
 
+
+# ----------------------------------------
+# Database helpers
+# ----------------------------------------
 def get_connection():
     return sqlite3.connect(DB_PATH)
+
 
 def get_dancer_data(name=None, level=None):
     conn = get_connection()
@@ -25,6 +32,7 @@ def get_dancer_data(name=None, level=None):
     conn.close()
     return data
 
+
 def get_summary_data():
     conn = get_connection()
     cur = conn.cursor()
@@ -39,6 +47,10 @@ def get_summary_data():
     conn.close()
     return data
 
+
+# ----------------------------------------
+# Routes
+# ----------------------------------------
 @app.route('/', methods=['GET', 'POST'])
 def index():
     name = request.form.get('name')
@@ -46,19 +58,23 @@ def index():
     dancers = get_dancer_data(name, level)
     return render_template('competitions.html', dancers=dancers)
 
+
 @app.route('/summary')
 def summary():
     summary_data = get_summary_data()
     return render_template('summary.html', summary=summary_data)
 
+
 @app.route('/resetdb')
 def reset_db():
+    """Clears and repopulates the database with fictitious data."""
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
+    # Create tables
     cur.execute("""
     CREATE TABLE dancers (
         name TEXT PRIMARY KEY,
@@ -77,67 +93,45 @@ def reset_db():
     )
     """)
 
-    # Fictional dancers
+    # Fictional dancer data
     dancers = [
-        ("Luna Greystone", "Novice"),
-        ("Elias Thorne", "Intermediate"),
-        ("Maris Alder", "Newcomer"),
-        ("Rowan Vale", "Advanced"),
-        ("Ivy Renard", "Advanced"),
-        ("Kieran Frost", "Intermediate"),
-        ("Sable Wynn", "Novice"),
-        ("Alaric Dune", "Newcomer"),
-        ("Vera Solen", "Intermediate"),
-        ("Finn Oren", "Novice"),
-        ("Cassia Vale", "Advanced"),
-        ("Ronan Pike", "Newcomer"),
-        ("Thalia Reeve", "Intermediate"),
-        ("Silas Merrin", "Novice"),
-        ("Aurelia Knox", "Advanced"),
-        ("Dax Halden", "Intermediate"),
-        ("Seren Lyric", "Advanced"),
-        ("Calder Voss", "Novice"),
-        ("Nora Wren", "Newcomer"),
-        ("Jalen Cross", "Intermediate"),
-        ("Maeve Torrin", "Advanced"),
-        ("Orin Faye", "Novice"),
-        ("Lyra Morn", "Newcomer"),
-        ("Bastian Rook", "Advanced"),
-        ("Corin Elen", "Intermediate"),
-        ("Tessa Wynn", "Novice"),
-        ("Rhett Sol", "Intermediate"),
-        ("Arden Vale", "Advanced"),
-        ("Kael Brin", "Newcomer"),
-        ("Eira Moss", "Novice"),
-        ("Dorian Pike", "Intermediate"),
-        ("Soren Vale", "Advanced"),
-        ("Isla Venn", "Intermediate"),
-        ("Nico Trask", "Newcomer"),
-        ("Ember Talon", "Novice"),
-        ("Mira Goss", "Intermediate"),
-        ("Talon Vire", "Advanced"),
-        ("Zara Crest", "Novice"),
-        ("Lucan Hale", "Intermediate"),
-        ("Renna Dusk", "Advanced")
+        ("Luna Greystone", "Novice"), ("Elias Thorne", "Intermediate"),
+        ("Maris Alder", "Newcomer"), ("Rowan Vale", "Advanced"),
+        ("Ivy Renard", "Advanced"), ("Kieran Frost", "Intermediate"),
+        ("Sable Wynn", "Novice"), ("Alaric Dune", "Newcomer"),
+        ("Vera Solen", "Intermediate"), ("Finn Oren", "Novice"),
+        ("Cassia Vale", "Advanced"), ("Ronan Pike", "Newcomer"),
+        ("Thalia Reeve", "Intermediate"), ("Silas Merrin", "Novice"),
+        ("Aurelia Knox", "Advanced"), ("Dax Halden", "Intermediate"),
+        ("Seren Lyric", "Advanced"), ("Calder Voss", "Novice"),
+        ("Nora Wren", "Newcomer"), ("Jalen Cross", "Intermediate"),
+        ("Maeve Torrin", "Advanced"), ("Orin Faye", "Novice"),
+        ("Lyra Morn", "Newcomer"), ("Bastian Rook", "Advanced"),
+        ("Corin Elen", "Intermediate"), ("Tessa Wynn", "Novice"),
+        ("Rhett Sol", "Intermediate"), ("Arden Vale", "Advanced"),
+        ("Kael Brin", "Newcomer"), ("Eira Moss", "Novice"),
+        ("Dorian Pike", "Intermediate"), ("Soren Vale", "Advanced"),
+        ("Isla Venn", "Intermediate"), ("Nico Trask", "Newcomer"),
+        ("Ember Talon", "Novice"), ("Mira Goss", "Intermediate"),
+        ("Talon Vire", "Advanced"), ("Zara Crest", "Novice"),
+        ("Lucan Hale", "Intermediate"), ("Renna Dusk", "Advanced")
     ]
     cur.executemany("INSERT INTO dancers (name, current_level) VALUES (?, ?)", dancers)
 
-    # Fictional competition names
+    # Fictional competitions
     comps = [
         "Amberlight Gala", "Crystal Echo Festival", "Moonveil Classic",
         "Velora Championship", "Ironbrook Invitational", "Halcyon Swing Bash",
-        "Silverfall Open", "Ravenridge Cup", "Driftwood Pro Fest", "Aetherwave Challenge",
-        "Lunaris Grand Prix", "Obsidian Step Classic", "Frostvale Invitational",
-        "Emberreach Bash", "Aurora Bloom Showcase", "Stormcrest Cup",
-        "Starspire Nationals", "Glacier Waltz Open", "Celestine Swing-Off",
-        "Twilight Tempo Tournament", "Solvane Step Expo", "Radiant Dancer Fest",
-        "Cinderpoint Pro Classic", "Whisperwind Open", "Crimson Trail Bash"
+        "Silverfall Open", "Ravenridge Cup", "Driftwood Pro Fest",
+        "Aetherwave Challenge", "Lunaris Grand Prix", "Obsidian Step Classic",
+        "Frostvale Invitational", "Emberreach Bash", "Aurora Bloom Showcase",
+        "Stormcrest Cup", "Starspire Nationals", "Glacier Waltz Open",
+        "Celestine Swing-Off", "Twilight Tempo Tournament", "Solvane Step Expo",
+        "Radiant Dancer Fest", "Cinderpoint Pro Classic", "Whisperwind Open",
+        "Crimson Trail Bash"
     ]
-
-    import random
     levels = ["Newcomer", "Novice", "Intermediate", "Advanced", "Pro"]
 
-    # Double dataset: 40 dancers * 3–4 competitions each
     competitions = []
     for dancer in dancers:
         name = dancer[0]
@@ -156,5 +150,33 @@ def reset_db():
     conn.close()
     return f"<h3>✅ Database reset with {len(dancers)} dancers and {len(competitions)} competitions (all fictitious).</h3><a href='/'>Back to Home</a>"
 
+
+# ----------------------------------------
+# Auto-create database on startup
+# ----------------------------------------
+def init_db():
+    if not os.path.exists(DB_PATH):
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS competitions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            competition_name TEXT,
+            level TEXT,
+            points INTEGER
+        );
+        """)
+        conn.commit()
+        conn.close()
+        print("Database created automatically ✅")
+
+
+init_db()
+
+
+# ----------------------------------------
+# Run the app
+# ----------------------------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
